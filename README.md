@@ -1,75 +1,76 @@
+
 # ᓚᘏᗢ Pawsh ZSH Theme
 
-A kawaii zsh theme for oh-my-zsh featuring an adorable cat prompt (`ᓚᘏᗢ`) that changes color based on the last command's exit status. Perfect for adding some cuteness to your terminal experience!
+Konnichiwa, terminal-tomodachi! Welcome to Pawsh, a super kawaii zsh theme for oh-my-zsh, inspired by Japanese neko (cat) culture. Your prompt becomes a cute cat face (`ᓚᘏᗢ`) that changes color, sugoi style, depending on your command's mood. Make your terminal more genki and stylish, ne!
 
 ![Pawsh Theme Example](https://github.com/SergioBonatto/pawsh-zsh-theme/blob/main/assets/example.png?raw=true)
 
-## Features
+## Features (Kawaii pointo!)
 
-- 🐱 **Kawaii cat prompt** - Shows a green cat (`ᓚᘏᗢ`) for successful commands and red for failed ones
-- 📁 **Current directory display** - Shows the current working directory in cyan
-- 🌿 **Git integration** - Displays git branch and status information
-- 🎨 **Color-coded status** - Visual feedback for command success/failure
-- ✨ **Minimalist design** - Clean and simple interface
+- Kawaii neko prompt: Cat face (`ᓚᘏᗢ`) turns green for happy (success) and red for sad (fail) commands. Cat-chan always watching your code, desu!
+- Current directory always in cool cyan, so you never get lost, senpai.
+- Git branch and status, totally sugoi for your code dojo.
+- Color feedback for command status, like a real anime transformation!
+- Minimalist and clean, but full of kawaii spirit.
 
-## Installation
+## Installation (Setsumei time!)
 
-### Method 1: Using Oh My Zsh Custom Themes
+### Method 1: Oh My Zsh Custom Themes (Ichiban easy!)
 
-1. Clone this repository:
+1. Clone this repo, onegai:
    ```bash
    git clone https://github.com/SergioBonatto/pawsh-zsh-theme.git
    ```
 
-2. Copy the theme file to your oh-my-zsh custom themes directory:
+2. Copy the theme to your oh-my-zsh custom themes folder:
    ```bash
    cp pawsh-zsh-theme/pawsh.zsh-theme $ZSH_CUSTOM/themes/
-   # or alternatively
+   # or
    # cp pawsh-zsh-theme/pawsh.zsh-theme ~/.oh-my-zsh/themes/
    ```
 
-3. Set pawsh as your default theme by editing `~/.zshrc`:
+3. Open your `~/.zshrc` and set the theme:
    ```bash
    ZSH_THEME="pawsh"
    ```
 
-4. Reload your zsh configuration:
+4. Reload your zsh config, ganbatte:
    ```bash
    source ~/.zshrc
    ```
 
-### Method 2: Direct Download
+### Method 2: Direct Download (Yatta!)
 
-1. Download the `pawsh.zsh-theme` file directly
-2. Place it in your oh-my-zsh themes directory (`~/.oh-my-zsh/themes/` or `$ZSH_CUSTOM/themes/`)
-3. Update your `~/.zshrc` file to use the theme
-4. Restart your terminal or run `source ~/.zshrc`
+1. Download `pawsh.zsh-theme` file
+2. Put it in your oh-my-zsh themes folder (`~/.oh-my-zsh/themes/` or `$ZSH_CUSTOM/themes/`)
+3. Edit your `~/.zshrc` to use the theme
+4. Restart terminal or run `source ~/.zshrc` for instant neko power
 
-## Requirements
+## Requirements (Daijoubu?)
 
 - [Oh My Zsh](https://ohmyz.sh/) framework
-- A terminal that supports Unicode characters
-- Git (for git status features)
+- Terminal with Unicode support (for neko face, of course)
+- Git (for git status, sugoi!)
 
-## Customization
+## Customization (Omakase!)
 
-The theme uses the following color scheme:
-- **Green cat** (`ᓚᘏᗢ`) - Successful command execution
-- **Red cat** (`ᓚᘏᗢ`) - Failed command execution
-- **Cyan** - Current directory
-- **Blue/Red** - Git branch information
-- **Yellow** - Git dirty status indicator
+Color scheme:
+- Green cat (`ᓚᘏᗢ`): Command success, cat is happy! Sugoi!
+- Red cat (`ᓚᘏᗢ`): Command fail, cat is a bit sad. Ganbatte!
+- Cyan: Current directory, always cool.
+- Blue/Red: Git branch, for your code ninja moves.
+- Yellow: Git dirty status, like a warning from sensei.
 
-You can modify these colors by editing the `pawsh.zsh-theme` file.
+Want to change colors? Edit `pawsh.zsh-theme` and make your own kawaii style, ne!
 
-## Contributing
+## Contributing (Tomodachi welcome!)
 
-Feel free to submit issues, feature requests, and pull requests to make this theme even more kawaii!
+Sugoi! If you have ideas, issues, or want to help, open an issue or PR. Let's make Pawsh even more kawaii together, minna-san!
 
-## License
+## License (Free as a stray cat)
 
 [MIT](LICENSE)
 
 ---
 
-*Made with ♥ for all the cat lovers and kawaii enthusiasts out there!*
+*Made with neko love for all code sensei and kawaii enthusiasts! Pawsh will make your terminal tanoshii, promise!*
