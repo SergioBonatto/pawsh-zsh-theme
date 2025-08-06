@@ -12,7 +12,7 @@ local prompt_status="%(?:%{${fg[green]}%}ᓚᘏᗢ%{${reset_color}%}:%{${fg[red]
 local prompt_root="%(!.%{${fg[magenta]}%}#%{${reset_color}%}.)"
 
 ## Current directory
-local prompt_dir="%{${fg[cyan]}%}%~%{${reset_color}%}"
+local prompt_dir="%{${fg[cyan]}%}${PWD##*/}%{${reset_color}%}"
 
 ## Virtualenv
 function virtualenv_prompt {
