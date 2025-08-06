@@ -38,8 +38,72 @@ ZSH_THEME_GIT_PROMPT_CLEAN="%{${fg[blue]}%})"
 # Main prompt (all in one line)
 PROMPT="${prompt_status} ${prompt_root}$(virtualenv_prompt)$(vi_mode_prompt)${prompt_dir} \$(git_prompt_info)"
 
-# Time on the right corner
-RPROMPT="%{${fg_bold[white]}%}%*%{${reset_color}%}"
+function git_complete_status {
+  if git rev-parse --git-dir > /dev/null 2>&1; then
+    local branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
+    local info="%{${fg[blue]}%}$branch%{${reset_color}%}"
+
+    # Arquivos por categoria
+    local modified=$(git diff --name-only 2>/dev/null | wc -l | tr -d ' ')
+    local staged=$(git diff --cached --name-only 2>/dev/null | wc -l | tr -d ' ')
+    local untracked=$(git ls-files --other --exclude-standard 2>/dev/null | wc -l | tr -d ' ')
+    local deleted=$(git diff --name-only --diff-filter=D 2>/dev/null | wc -l | tr -d ' ')
+
+    # Mostra contadores de arquivos
+    if [[ "$staged" -gt 0 ]]; then
+      info+=" %{${fg[green]}%}+$staged%{${reset_color}%}"
+    fi
+    if [[ "$modified" -gt 0 ]]; then
+      info+=" %{${fg[yellow]}%}~$modified%{${reset_color}%}"
+    fi
+    if [[ "$deleted" -gt 0 ]]; then
+      info+=" %{${fg[red]}%}-$deleted%{${reset_color}%}"
+    fi
+    if [[ "$untracked" -gt 0 ]]; then
+      info+=" %{${fg[magenta]}%}?$untracked%{${reset_color}%}"
+    fi
+
+    # Commits ahead/behind
+    local ahead behind
+    ahead=$(git rev-list --count @{upstream}..HEAD 2>/dev/null)
+    behind=$(git rev-list --count HEAD..@{upstream} 2>/dev/null)
+
+    if [[ "$ahead" -gt 0 ]]; then
+      info+=" %{${fg[cyan]}%}↑$ahead%{${reset_color}%}"
+    fi
+    if [[ "$behind" -gt 0 ]]; then
+      info+=" %{${fg[red]}%}↓$behind%{${reset_color}%}"
+    fi
+
+    # Stashes
+    local stashes=$(git stash list 2>/dev/null | wc -l | tr -d ' ')
+    if [[ "$stashes" -gt 0 ]]; then
+      info+=" %{${fg[white]}%}≡$stashes%{${reset_color}%}"
+    fi
+
+    # Conflitos (durante merge/rebase)
+    local conflicts=$(git diff --name-only --diff-filter=U 2>/dev/null | wc -l | tr -d ' ')
+    if [[ "$conflicts" -gt 0 ]]; then
+      info+=" %{${fg_bold[red]}%}⚡$conflicts%{${reset_color}%}"
+    fi
+
+    # Estado especial (merge, rebase, cherry-pick, etc)
+    local git_dir=$(git rev-parse --git-dir 2>/dev/null)
+    if [[ -f "$git_dir/MERGE_HEAD" ]]; then
+      info+=" %{${fg[yellow]}%}[MERGE]%{${reset_color}%}"
+    elif [[ -d "$git_dir/rebase-merge" ]] || [[ -d "$git_dir/rebase-apply" ]]; then
+      info+=" %{${fg[yellow]}%}[REBASE]%{${reset_color}%}"
+    elif [[ -f "$git_dir/CHERRY_PICK_HEAD" ]]; then
+      info+=" %{${fg[yellow]}%}[CHERRY]%{${reset_color}%}"
+    elif [[ -f "$git_dir/BISECT_LOG" ]]; then
+      info+=" %{${fg[yellow]}%}[BISECT]%{${reset_color}%}"
+    fi
+
+    echo "$info"
+  fi
+}
+RPROMPT="\$(git_complete_status)"
+# RPROMPT="%{${fg_bold[white]}%}%*%{${reset_color}%}"
 
 # Update vi mode only if ZLE is active
 function zle-reset-prompt {
