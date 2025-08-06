@@ -2,6 +2,9 @@
 
 Konnichiwa, terminal-tomodachi! Pawsh is a super kawaii zsh theme for oh-my-zsh, inspired by Japanese neko culture. Your prompt becomes a cute cat face (`ᓚᘏᗢ`) that changes color depending on your command's mood. Make your terminal more genki and stylish, ne!
 
+![Pawsh Theme Example](https://github.com/SergioBonatto/pawsh-zsh-theme/blob/main/assets/example.png?raw=true)
+
+
 ## Features (Kawaii pointo!)
 
 - Cat face prompt (`ᓚᘏᗢ`) changes color: green for happy (success), red for sad (fail). Cat-chan always watching your code, desu!
