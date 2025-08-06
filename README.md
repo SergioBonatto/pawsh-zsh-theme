@@ -1,65 +1,58 @@
-
 # ᓚᘏᗢ Pawsh ZSH Theme
 
-Konnichiwa, terminal-tomodachi! Welcome to Pawsh, a super kawaii zsh theme for oh-my-zsh, inspired by Japanese neko (cat) culture. Your prompt becomes a cute cat face (`ᓚᘏᗢ`) that changes color, sugoi style, depending on your command's mood. Make your terminal more genki and stylish, ne!
-
-![Pawsh Theme Example](https://github.com/SergioBonatto/pawsh-zsh-theme/blob/main/assets/example.png?raw=true)
+Konnichiwa, terminal-tomodachi! Pawsh is a super kawaii zsh theme for oh-my-zsh, inspired by Japanese neko culture. Your prompt becomes a cute cat face (`ᓚᘏᗢ`) that changes color depending on your command's mood. Make your terminal more genki and stylish, ne!
 
 ## Features (Kawaii pointo!)
 
-- Kawaii neko prompt: Cat face (`ᓚᘏᗢ`) turns green for happy (success) and red for sad (fail) commands. Cat-chan always watching your code, desu!
+- Cat face prompt (`ᓚᘏᗢ`) changes color: green for happy (success), red for sad (fail). Cat-chan always watching your code, desu!
+- Root user indicator: magenta `#` appears if you are root, so you feel like a real system sensei.
 - Current directory always in cool cyan, so you never get lost, senpai.
-- Git branch and status, totally sugoi for your code dojo.
-- Color feedback for command status, like a real anime transformation!
+- Python virtualenv name shown in blue bold if active, for your data science dojo.
+- Vi mode indicator: `[N]` in red bold when in normal mode, for vim-ninja moves.
+- Git branch and status: blue/red for branch, yellow for dirty status, so you know if your code is sugoi or needs fixing.
+- Time displayed on the right (white bold), so you never miss your next anime episode.
+- Color feedback for command status, like a real transformation scene!
 - Minimalist and clean, but full of kawaii spirit.
+- Hooks for instant vi mode updates (using ZLE), so your prompt is always in sync with your ninja moves.
 
 ## Installation (Setsumei time!)
-
-### Method 1: Oh My Zsh Custom Themes (Ichiban easy!)
 
 1. Clone this repo, onegai:
    ```bash
    git clone https://github.com/SergioBonatto/pawsh-zsh-theme.git
    ```
-
 2. Copy the theme to your oh-my-zsh custom themes folder:
    ```bash
    cp pawsh-zsh-theme/pawsh.zsh-theme $ZSH_CUSTOM/themes/
    # or
    # cp pawsh-zsh-theme/pawsh.zsh-theme ~/.oh-my-zsh/themes/
    ```
-
 3. Open your `~/.zshrc` and set the theme:
    ```bash
    ZSH_THEME="pawsh"
    ```
-
 4. Reload your zsh config, ganbatte:
    ```bash
    source ~/.zshrc
    ```
 
-### Method 2: Direct Download (Yatta!)
-
-1. Download `pawsh.zsh-theme` file
-2. Put it in your oh-my-zsh themes folder (`~/.oh-my-zsh/themes/` or `$ZSH_CUSTOM/themes/`)
-3. Edit your `~/.zshrc` to use the theme
-4. Restart terminal or run `source ~/.zshrc` for instant neko power
-
 ## Requirements (Daijoubu?)
 
-- [Oh My Zsh](https://ohmyz.sh/) framework
+- Oh My Zsh framework
 - Terminal with Unicode support (for neko face, of course)
 - Git (for git status, sugoi!)
 
 ## Customization (Omakase!)
 
 Color scheme:
-- Green cat (`ᓚᘏᗢ`): Command success, cat is happy! Sugoi!
-- Red cat (`ᓚᘏᗢ`): Command fail, cat is a bit sad. Ganbatte!
+- Green cat: Command success, cat is happy! Sugoi!
+- Red cat: Command fail, cat is a bit sad. Ganbatte!
 - Cyan: Current directory, always cool.
 - Blue/Red: Git branch, for your code ninja moves.
 - Yellow: Git dirty status, like a warning from sensei.
+- Magenta: Root user, for system master mode.
+- Blue bold: Python virtualenv, for your data science journey.
+- Red bold: Vi mode, for vim warriors.
 
 Want to change colors? Edit `pawsh.zsh-theme` and make your own kawaii style, ne!
 
@@ -69,8 +62,8 @@ Sugoi! If you have ideas, issues, or want to help, open an issue or PR. Let's ma
 
 ## License (Free as a stray cat)
 
-[MIT](LICENSE)
+MIT
 
 ---
 
-*Made with neko love for all code sensei and kawaii enthusiasts! Pawsh will make your terminal tanoshii, promise!*
+*Made with neko love for all code sensei and kawaii enthusiasts! Pawsh brings neko power and genki vibes to every command. Happy coding, nya~!*
