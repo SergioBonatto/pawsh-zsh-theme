@@ -6,7 +6,8 @@ autoload -U colors && colors
 reset_color="%{$reset_color%}"
 
 ## Last command status
-local prompt_status="%(?:%{${fg[green]}%}ᓚᘏᗢ%{${reset_color}%}:%{${fg[red]}%}ᓚᘏᗢ%{${reset_color}%})"
+## local prompt_status="%(?:%{${fg[blue]}%}ᓚᘏᗢ%{${reset_color}%}:%{${fg[red]}%}ᓚᘏᗢ%{${reset_color}%})"
+local prompt_status="%(?:%F{#4ECDC4}ᓚᘏᗢ%f:%F{#EE4B4B}ᓚᘏᗢ%f)"
 
 ## Root user
 local prompt_root="%(!.%{${fg[magenta]}%}#%{${reset_color}%}.)"
