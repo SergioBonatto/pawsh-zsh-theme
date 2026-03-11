@@ -2,8 +2,6 @@
 ## 🐾 Pawsh ZSH Theme
 ## =============================
 
-autoload -U colors && colors
-
 ## Last command status
 local prompt_status="%(?:%F{#4ECDC4}ᓚᘏᗢ%f:%F{#EE4B4B}ᓚᘏᗢ%f)"
 
