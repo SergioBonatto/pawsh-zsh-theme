@@ -11,7 +11,7 @@ local prompt_status="%(?:%F{#4ECDC4}ᓚᘏᗢ%f:%F{#EE4B4B}ᓚᘏᗢ%f)"
 local prompt_root="%(!.%{${fg[magenta]}%}#%{${reset_color}%}.)"
 
 ## Current directory
-local prompt_dir='%{${fg[cyan]}%}$(if [[ $PWD == $HOME ]]; then echo "~"; else basename "$PWD"; fi)%{${reset_color}%}'
+prompt_dir='%{${fg[cyan]}%}$(if [[ $PWD == $HOME ]]; then echo "~"; else basename "$PWD"; fi)%{${reset_color}%}'
 
 ## Virtualenv
 function virtualenv_prompt {
@@ -48,7 +48,7 @@ function git_prompt_info {
 }
 
 ## Main prompt
-PROMPT="${prompt_status} ${prompt_root}$(virtualenv_prompt)$(vi_mode_prompt)${prompt_dir} \$(git_prompt_info)"
+PROMPT="${prompt_status} ${prompt_root}\$(virtualenv_prompt)\$(vi_mode_prompt)${prompt_dir} \$(git_prompt_info)"
 
 function git_complete_status {
   git rev-parse --git-dir > /dev/null 2>&1 || return
