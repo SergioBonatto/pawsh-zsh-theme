@@ -2,31 +2,7 @@
 ## 🐾 Pawsh ZSH Theme
 ## =============================
 
-## Last command status
-local prompt_status="%(?:%F{#4ECDC4}ᓚᘏᗢ%f:%F{#EE4B4B}ᓚᘏᗢ%f)"
-
-## Root user
-local prompt_root="%(!.%{${fg[magenta]}%}#%{${reset_color}%}.)"
-
-## Current directory
-prompt_dir='%{${fg[cyan]}%}$(if [[ $PWD == $HOME ]]; then echo "~"; else basename "$PWD"; fi)%{${reset_color}%}'
-
-## Virtualenv
-function virtualenv_prompt {
-  if [[ -n "$VIRTUAL_ENV" ]]; then
-    local venv_name="${VIRTUAL_ENV##*/}"
-    echo "%{${fg_bold[blue]}%}[${venv_name}]%{${reset_color}%} "
-  fi
-}
-
-## Vi mode
-function vi_mode_prompt {
-  if [[ "$KEYMAP" == "vicmd" ]]; then
-    echo "%{${fg_bold[red]}%}[N]%{${reset_color}%} "
-  fi
-}
-
-## Git: prefix, suffix, dirty/clean (reimplementado sem OMZ)
+## Git: prefix, suffix, dirty/clean
 ZSH_THEME_GIT_PROMPT_PREFIX="%{${fg_bold[blue]}%}git:(%{${fg[red]}%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{${reset_color}%} "
 ZSH_THEME_GIT_PROMPT_DIRTY="%{${fg[blue]}%}) %{${fg[yellow]}%}✗"
@@ -45,8 +21,18 @@ function git_prompt_info {
   echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${branch}${dirty}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
 }
 
-## Main prompt
-PROMPT="${prompt_status} ${prompt_root}\$(virtualenv_prompt)\$(vi_mode_prompt)${prompt_dir} \$(git_prompt_info)"
+function virtualenv_prompt {
+  if [[ -n "$VIRTUAL_ENV" ]]; then
+    local venv_name="${VIRTUAL_ENV##*/}"
+    echo "%{${fg_bold[blue]}%}[${venv_name}]%{${reset_color}%} "
+  fi
+}
+
+function vi_mode_prompt {
+  if [[ "$KEYMAP" == "vicmd" ]]; then
+    echo "%{${fg_bold[red]}%}[N]%{${reset_color}%} "
+  fi
+}
 
 function git_complete_status {
   git rev-parse --git-dir > /dev/null 2>&1 || return
@@ -91,16 +77,15 @@ function git_complete_status {
   echo "$info"
 }
 
-RPROMPT="\$(git_complete_status)"
+## Main prompt
+PROMPT='%(?:%F{#4ECDC4}ᓚᘏᗢ%f:%F{#EE4B4B}ᓚᘏᗢ%f) %(!.%{${fg[magenta]}%}#%{${reset_color}%}.)$(virtualenv_prompt)$(vi_mode_prompt)%{${fg[cyan]}%}$(if [[ $PWD == $HOME ]]; then echo "~"; else basename "$PWD"; fi)%{${reset_color}%} $(git_prompt_info)'
+
+RPROMPT='$(git_complete_status)'
 
 ## Vi mode hooks
 function zle-reset-prompt {
-  if [[ -n "$ZLE" ]]; then
-    zle reset-prompt
-  fi
+  zle reset-prompt
 }
 
 autoload -Uz add-zsh-hook
-if [[ -n "$ZLE" && ${(M)functions[zle-reset-prompt]} == function ]]; then
-  add-zsh-hook zle-keymap-select zle-reset-prompt
-fi
+add-zsh-hook zle-keymap-select zle-reset-prompt
