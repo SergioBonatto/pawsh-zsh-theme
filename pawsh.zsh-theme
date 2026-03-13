@@ -56,7 +56,7 @@ function pawsh_git_info {
 
     esac
 
-  done <<< "$status"
+  done <<< "$git_status"
 
   local info="%{${fg[blue]}%}$branch%{${reset_color}%}"
 
