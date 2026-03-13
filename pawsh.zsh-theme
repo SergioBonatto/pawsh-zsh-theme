@@ -11,8 +11,8 @@ function pawsh_git_info {
 
   git rev-parse --is-inside-work-tree &>/dev/null || return
 
-  local status
-  status=$(git status --porcelain=2 --branch 2>/dev/null)
+  local git_status
+  git_status=$(git status --porcelain=2 --branch 2>/dev/null)
 
   local branch ahead behind
   local staged=0 modified=0 deleted=0 untracked=0 conflicts=0
