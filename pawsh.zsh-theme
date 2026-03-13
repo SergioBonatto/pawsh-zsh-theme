@@ -102,9 +102,8 @@ PROMPT='%(?:%F{#4ECDC4}ᓚᘏᗢ%f:%F{#EE4B4B}ᓚᘏᗢ%f) %(!.%{${fg[magenta]}%
 
 RPROMPT=''
 
-function zle-reset-prompt {
+function zle-keymap-select {
   zle reset-prompt
 }
 
-autoload -Uz add-zsh-hook
-add-zsh-hook zle-keymap-select zle-reset-prompt
+zle -N zle-keymap-select
