@@ -32,9 +32,9 @@ function pawsh_git_info {
       ;;
 
       "# branch.ab "*)
-        [[ $line =~ \+([0-9]+)\ -([0-9]+) ]]
-        ahead=${match[1]}
-        behind=${match[2]}
+        local ab=${line#"# branch.ab +"}
+        ahead=${ab%% -*}
+        behind=${ab##* -}
       ;;
 
       "1 "*|"2 "*)
@@ -87,9 +87,9 @@ function git_complete_status {
       ;;
 
       "# branch.ab "*)
-        [[ $line =~ \+([0-9]+)\ -([0-9]+) ]]
-        ahead=${match[1]}
-        behind=${match[2]}
+        local ab=${line#"# branch.ab +"}
+        ahead=${ab%% -*}
+        behind=${ab##* -}
       ;;
 
       "1 "*|"2 "*)
