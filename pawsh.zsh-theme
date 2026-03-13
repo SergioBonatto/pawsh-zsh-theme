@@ -1,24 +1,30 @@
 ## =============================
-## 🐾 Pawsh ZSH Theme (Optimized)
+## Pawsh ZSH Theme
 ## =============================
 
+autoload -Uz colors && colors
+autoload -Uz add-zsh-hook
+
+## Git: prefix, suffix, dirty/clean
 ZSH_THEME_GIT_PROMPT_PREFIX="%{${fg_bold[blue]}%}git:(%{${fg[red]}%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{${reset_color}%} "
-ZSH_THEME_GIT_PROMPT_DIRTY="%{${fg[yellow]}%}✗"
+ZSH_THEME_GIT_PROMPT_DIRTY="%{${fg[blue]}%}) %{${fg[yellow]}%}✗"
 ZSH_THEME_GIT_PROMPT_CLEAN="%{${fg[blue]}%})"
 
+## -----------------------------
+## Fast git prompt (single git read)
+## -----------------------------
 function pawsh_git_info {
-
   git rev-parse --is-inside-work-tree &>/dev/null || return
 
-  local git_status
-  git_status=$(git status --porcelain=2 --branch 2>/dev/null)
+  local git_data
+  git_data=$(git status --porcelain=2 --branch 2>/dev/null)
 
-  local branch ahead behind
-  local staged=0 modified=0 deleted=0 untracked=0 conflicts=0
+  local branch=""
+  local ahead=0 behind=0
+  local staged=0 modified=0 untracked=0 deleted=0 conflicts=0
 
   while IFS= read -r line; do
-
     case "$line" in
 
       "# branch.head "*)
@@ -26,53 +32,95 @@ function pawsh_git_info {
       ;;
 
       "# branch.ab "*)
-        local ab=${line#"# branch.ab "}
-        ahead=${ab#"+*"}
-        ahead=${ahead%% -*}
-        behind=${ab#*"-"}
+        [[ $line =~ \+([0-9]+)\ -([0-9]+) ]]
+        ahead=${match[1]}
+        behind=${match[2]}
       ;;
 
-      "1 "*)
+      "1 "*|"2 "*)
         local xy=${line:2:2}
 
         [[ ${xy:0:1} != "." ]] && ((staged++))
         [[ ${xy:1:1} != "." ]] && ((modified++))
-      ;;
 
-      "2 "*)
-        local xy=${line:2:2}
-
-        [[ ${xy:0:1} != "." ]] && ((staged++))
-        [[ ${xy:1:1} != "." ]] && ((modified++))
-      ;;
-
-      "u "*)
-        ((conflicts++))
+        [[ $line == *" D."* || $line == *".D"* ]] && ((deleted++))
       ;;
 
       "? "*)
         ((untracked++))
       ;;
 
-    esac
+      "u "*)
+        ((conflicts++))
+      ;;
 
-  done <<< "$git_status"
+    esac
+  done <<< "$git_data"
+
+  local dirty="$ZSH_THEME_GIT_PROMPT_CLEAN"
+
+  if (( staged > 0 || modified > 0 || untracked > 0 || conflicts > 0 )); then
+    dirty="$ZSH_THEME_GIT_PROMPT_DIRTY"
+  fi
+
+  echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${branch}${dirty}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
+}
+
+## -----------------------------
+## Detailed right-side git info
+## -----------------------------
+function git_complete_status {
+  git rev-parse --is-inside-work-tree &>/dev/null || return
+
+  local git_data
+  git_data=$(git status --porcelain=2 --branch 2>/dev/null)
+
+  local branch=""
+  local ahead=0 behind=0
+  local staged=0 modified=0 untracked=0 deleted=0 conflicts=0
+
+  while IFS= read -r line; do
+    case "$line" in
+
+      "# branch.head "*)
+        branch=${line#"# branch.head "}
+      ;;
+
+      "# branch.ab "*)
+        [[ $line =~ \+([0-9]+)\ -([0-9]+) ]]
+        ahead=${match[1]}
+        behind=${match[2]}
+      ;;
+
+      "1 "*|"2 "*)
+        local xy=${line:2:2}
+
+        [[ ${xy:0:1} != "." ]] && ((staged++))
+        [[ ${xy:1:1} != "." ]] && ((modified++))
+
+        [[ $line == *" D."* || $line == *".D"* ]] && ((deleted++))
+      ;;
+
+      "? "*)
+        ((untracked++))
+      ;;
+
+      "u "*)
+        ((conflicts++))
+      ;;
+
+    esac
+  done <<< "$git_data"
 
   local info="%{${fg[blue]}%}$branch%{${reset_color}%}"
 
-  [[ "$staged"    -gt 0 ]] && info+=" %{${fg[green]}%}+$staged%{${reset_color}%}"
-  [[ "$modified"  -gt 0 ]] && info+=" %{${fg[yellow]}%}~$modified%{${reset_color}%}"
-  [[ "$deleted"   -gt 0 ]] && info+=" %{${fg[red]}%}-$deleted%{${reset_color}%}"
-  [[ "$untracked" -gt 0 ]] && info+=" %{${fg[magenta]}%}?$untracked%{${reset_color}%}"
-
-  [[ "$ahead"  -gt 0 ]] && info+=" %{${fg[cyan]}%}↑$ahead%{${reset_color}%}"
-  [[ "$behind" -gt 0 ]] && info+=" %{${fg[red]}%}↓$behind%{${reset_color}%}"
-
-  [[ "$conflicts" -gt 0 ]] && info+=" %{${fg_bold[red]}%}⚡$conflicts%{${reset_color}%}"
-
-  local stashes
-  stashes=$(git stash list 2>/dev/null | wc -l | tr -d ' ')
-  [[ "$stashes" -gt 0 ]] && info+=" %{${fg[white]}%}≡$stashes%{${reset_color}%}"
+  (( staged > 0 ))    && info+=" %{${fg[green]}%}+$staged%{${reset_color}%}"
+  (( modified > 0 ))  && info+=" %{${fg[yellow]}%}~$modified%{${reset_color}%}"
+  (( deleted > 0 ))   && info+=" %{${fg[red]}%}-$deleted%{${reset_color}%}"
+  (( untracked > 0 )) && info+=" %{${fg[magenta]}%}?$untracked%{${reset_color}%}"
+  (( ahead > 0 ))     && info+=" %{${fg[cyan]}%}↑$ahead%{${reset_color}%}"
+  (( behind > 0 ))    && info+=" %{${fg[red]}%}↓$behind%{${reset_color}%}"
+  (( conflicts > 0 )) && info+=" %{${fg_bold[red]}%}⚡$conflicts%{${reset_color}%}"
 
   local git_dir
   git_dir=$(git rev-parse --git-dir 2>/dev/null)
@@ -85,25 +133,39 @@ function pawsh_git_info {
   echo "$info"
 }
 
+## -----------------------------
+## Virtualenv
+## -----------------------------
 function virtualenv_prompt {
-  if [[ -n "$VIRTUAL_ENV" ]]; then
-    local venv_name="${VIRTUAL_ENV##*/}"
-    echo "%{${fg_bold[blue]}%}[${venv_name}]%{${reset_color}%} "
-  fi
+  [[ -n "$VIRTUAL_ENV" ]] || return
+  echo "%{${fg_bold[blue]}%}[${VIRTUAL_ENV:t}]%{${reset_color}%} "
 }
 
+## -----------------------------
+## Vi mode
+## -----------------------------
 function vi_mode_prompt {
-  if [[ "$KEYMAP" == "vicmd" ]]; then
-    echo "%{${fg_bold[red]}%}[N]%{${reset_color}%} "
-  fi
+  [[ "$KEYMAP" == vicmd ]] || return
+  echo "%{${fg_bold[red]}%}[N]%{${reset_color}%} "
 }
 
-PROMPT='%(?:%F{#4ECDC4}ᓚᘏᗢ%f:%F{#EE4B4B}ᓚᘏᗢ%f) %(!.%{${fg[magenta]}%}#%{${reset_color}%}.)$(virtualenv_prompt)$(vi_mode_prompt)%{${fg[cyan]}%}$(if [[ $PWD == $HOME ]]; then echo "~"; else ${PWD:t}; fi)%{${reset_color}%} $(pawsh_git_info)'
+## -----------------------------
+## Prompt
+## -----------------------------
+PROMPT='%(?:%F{#4ECDC4}ᓚᘏᗢ%f:%F{#EE4B4B}ᓚᘏᗢ%f) %(!.%{${fg[magenta]}%}#%{${reset_color}%}.)$(virtualenv_prompt)$(vi_mode_prompt)%{${fg[cyan]}%}${PWD:t}%{${reset_color}%} $(pawsh_git_info)'
 
-RPROMPT=''
+RPROMPT='$(git_complete_status)'
 
+## -----------------------------
+## Vi mode refresh
+## -----------------------------
 function zle-keymap-select {
   zle reset-prompt
 }
 
+function zle-line-init {
+  zle reset-prompt
+}
+
 zle -N zle-keymap-select
+zle -N zle-line-init
