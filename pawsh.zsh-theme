@@ -1,24 +1,88 @@
 ## =============================
-## 🐾 Pawsh ZSH Theme
+## 🐾 Pawsh ZSH Theme (Optimized)
 ## =============================
 
-## Git: prefix, suffix, dirty/clean
 ZSH_THEME_GIT_PROMPT_PREFIX="%{${fg_bold[blue]}%}git:(%{${fg[red]}%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{${reset_color}%} "
-ZSH_THEME_GIT_PROMPT_DIRTY="%{${fg[blue]}%}) %{${fg[yellow]}%}✗"
+ZSH_THEME_GIT_PROMPT_DIRTY="%{${fg[yellow]}%}✗"
 ZSH_THEME_GIT_PROMPT_CLEAN="%{${fg[blue]}%})"
 
-function git_prompt_info {
-  git rev-parse --git-dir > /dev/null 2>&1 || return
-  local branch
-  branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
-  local dirty
-  if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null; then
-    dirty="$ZSH_THEME_GIT_PROMPT_DIRTY"
-  else
-    dirty="$ZSH_THEME_GIT_PROMPT_CLEAN"
-  fi
-  echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${branch}${dirty}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
+function pawsh_git_info {
+
+  git rev-parse --is-inside-work-tree &>/dev/null || return
+
+  local status
+  status=$(git status --porcelain=2 --branch 2>/dev/null)
+
+  local branch ahead behind
+  local staged=0 modified=0 deleted=0 untracked=0 conflicts=0
+
+  while IFS= read -r line; do
+
+    case "$line" in
+
+      "# branch.head "*)
+        branch=${line#"# branch.head "}
+      ;;
+
+      "# branch.ab "*)
+        local ab=${line#"# branch.ab "}
+        ahead=${ab#"+*"}
+        ahead=${ahead%% -*}
+        behind=${ab#*"-"}
+      ;;
+
+      "1 "*)
+        local xy=${line:2:2}
+
+        [[ ${xy:0:1} != "." ]] && ((staged++))
+        [[ ${xy:1:1} != "." ]] && ((modified++))
+      ;;
+
+      "2 "*)
+        local xy=${line:2:2}
+
+        [[ ${xy:0:1} != "." ]] && ((staged++))
+        [[ ${xy:1:1} != "." ]] && ((modified++))
+      ;;
+
+      "u "*)
+        ((conflicts++))
+      ;;
+
+      "? "*)
+        ((untracked++))
+      ;;
+
+    esac
+
+  done <<< "$status"
+
+  local info="%{${fg[blue]}%}$branch%{${reset_color}%}"
+
+  [[ "$staged"    -gt 0 ]] && info+=" %{${fg[green]}%}+$staged%{${reset_color}%}"
+  [[ "$modified"  -gt 0 ]] && info+=" %{${fg[yellow]}%}~$modified%{${reset_color}%}"
+  [[ "$deleted"   -gt 0 ]] && info+=" %{${fg[red]}%}-$deleted%{${reset_color}%}"
+  [[ "$untracked" -gt 0 ]] && info+=" %{${fg[magenta]}%}?$untracked%{${reset_color}%}"
+
+  [[ "$ahead"  -gt 0 ]] && info+=" %{${fg[cyan]}%}↑$ahead%{${reset_color}%}"
+  [[ "$behind" -gt 0 ]] && info+=" %{${fg[red]}%}↓$behind%{${reset_color}%}"
+
+  [[ "$conflicts" -gt 0 ]] && info+=" %{${fg_bold[red]}%}⚡$conflicts%{${reset_color}%}"
+
+  local stashes
+  stashes=$(git stash list 2>/dev/null | wc -l | tr -d ' ')
+  [[ "$stashes" -gt 0 ]] && info+=" %{${fg[white]}%}≡$stashes%{${reset_color}%}"
+
+  local git_dir
+  git_dir=$(git rev-parse --git-dir 2>/dev/null)
+
+  [[ -f "$git_dir/MERGE_HEAD" ]] && info+=" %{${fg[yellow]}%}[MERGE]%{${reset_color}%}"
+  [[ -d "$git_dir/rebase-merge" || -d "$git_dir/rebase-apply" ]] && info+=" %{${fg[yellow]}%}[REBASE]%{${reset_color}%}"
+  [[ -f "$git_dir/CHERRY_PICK_HEAD" ]] && info+=" %{${fg[yellow]}%}[CHERRY]%{${reset_color}%}"
+  [[ -f "$git_dir/BISECT_LOG" ]] && info+=" %{${fg[yellow]}%}[BISECT]%{${reset_color}%}"
+
+  echo "$info"
 }
 
 function virtualenv_prompt {
@@ -34,55 +98,10 @@ function vi_mode_prompt {
   fi
 }
 
-function git_complete_status {
-  git rev-parse --git-dir > /dev/null 2>&1 || return
+PROMPT='%(?:%F{#4ECDC4}ᓚᘏᗢ%f:%F{#EE4B4B}ᓚᘏᗢ%f) %(!.%{${fg[magenta]}%}#%{${reset_color}%}.)$(virtualenv_prompt)$(vi_mode_prompt)%{${fg[cyan]}%}$(if [[ $PWD == $HOME ]]; then echo "~"; else basename "$PWD"; fi)%{${reset_color}%} $(pawsh_git_info)'
 
-  local branch
-  branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
-  local info="%{${fg[blue]}%}$branch%{${reset_color}%}"
+RPROMPT=''
 
-  local modified staged untracked deleted
-  modified=$(git diff --name-only 2>/dev/null | wc -l | tr -d ' ')
-  staged=$(git diff --cached --name-only 2>/dev/null | wc -l | tr -d ' ')
-  untracked=$(git ls-files --other --exclude-standard 2>/dev/null | wc -l | tr -d ' ')
-  deleted=$(git diff --name-only --diff-filter=D 2>/dev/null | wc -l | tr -d ' ')
-
-  [[ "$staged"    -gt 0 ]] && info+=" %{${fg[green]}%}+$staged%{${reset_color}%}"
-  [[ "$modified"  -gt 0 ]] && info+=" %{${fg[yellow]}%}~$modified%{${reset_color}%}"
-  [[ "$deleted"   -gt 0 ]] && info+=" %{${fg[red]}%}-$deleted%{${reset_color}%}"
-  [[ "$untracked" -gt 0 ]] && info+=" %{${fg[magenta]}%}?$untracked%{${reset_color}%}"
-
-  local ahead behind
-  ahead=$(git rev-list --count @{upstream}..HEAD 2>/dev/null)
-  behind=$(git rev-list --count HEAD..@{upstream} 2>/dev/null)
-
-  [[ "$ahead"  -gt 0 ]] && info+=" %{${fg[cyan]}%}↑$ahead%{${reset_color}%}"
-  [[ "$behind" -gt 0 ]] && info+=" %{${fg[red]}%}↓$behind%{${reset_color}%}"
-
-  local stashes
-  stashes=$(git stash list 2>/dev/null | wc -l | tr -d ' ')
-  [[ "$stashes" -gt 0 ]] && info+=" %{${fg[white]}%}≡$stashes%{${reset_color}%}"
-
-  local conflicts
-  conflicts=$(git diff --name-only --diff-filter=U 2>/dev/null | wc -l | tr -d ' ')
-  [[ "$conflicts" -gt 0 ]] && info+=" %{${fg_bold[red]}%}⚡$conflicts%{${reset_color}%}"
-
-  local git_dir
-  git_dir=$(git rev-parse --git-dir 2>/dev/null)
-  [[ -f "$git_dir/MERGE_HEAD"                                  ]] && info+=" %{${fg[yellow]}%}[MERGE]%{${reset_color}%}"
-  [[ -d "$git_dir/rebase-merge" || -d "$git_dir/rebase-apply" ]] && info+=" %{${fg[yellow]}%}[REBASE]%{${reset_color}%}"
-  [[ -f "$git_dir/CHERRY_PICK_HEAD"                            ]] && info+=" %{${fg[yellow]}%}[CHERRY]%{${reset_color}%}"
-  [[ -f "$git_dir/BISECT_LOG"                                  ]] && info+=" %{${fg[yellow]}%}[BISECT]%{${reset_color}%}"
-
-  echo "$info"
-}
-
-## Main prompt
-PROMPT='%(?:%F{#4ECDC4}ᓚᘏᗢ%f:%F{#EE4B4B}ᓚᘏᗢ%f) %(!.%{${fg[magenta]}%}#%{${reset_color}%}.)$(virtualenv_prompt)$(vi_mode_prompt)%{${fg[cyan]}%}$(if [[ $PWD == $HOME ]]; then echo "~"; else basename "$PWD"; fi)%{${reset_color}%} $(git_prompt_info)'
-
-RPROMPT='$(git_complete_status)'
-
-## Vi mode hooks
 function zle-reset-prompt {
   zle reset-prompt
 }
